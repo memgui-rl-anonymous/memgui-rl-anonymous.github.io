@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="description" content="MemGUI-RL: reinforcement learning for proactive context management in long-horizon mobile GUI agents. FARPO turns MemGUI-8B-SFT into MemGUI-8B-RL with reward-decoupled group advantages and folding-aware sampling.">
+  <title>MemGUI-RL</title>
+  <link rel="icon" href="assets/logo/memgui-rl-mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.67 0 8.2c0 3.62 2.29 6.69 5.47 7.78.4.08.55-.18.55-.4 0-.2-.01-.86-.01-1.56-2.01.38-2.53-.5-2.69-.95-.09-.23-.48-.95-.82-1.14-.28-.15-.68-.52-.01-.53.63-.01 1.08.59 1.23.83.72 1.24 1.87.89 2.33.68.07-.53.28-.89.51-1.09-1.78-.21-3.64-.91-3.64-4.03 0-.89.31-1.62.82-2.19-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.84A7.42 7.42 0 0 1 8 4.01c.68 0 1.36.09 2 .27 1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.16.51.57.82 1.3.82 2.19 0 3.13-1.87 3.82-3.65 4.03.29.26.54.75.54 1.51 0 1.09-.01 1.97-.01 2.24 0 .22.15.48.55.4A8.1 8.1 0 0 0 16 8.2C16 3.67 12.42 0 8 0Z"/></symbol>
+    <symbol id="icon-paper" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></symbol>
+  </svg>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="MemGUI-RL">
+        <img src="assets/logo/memgui-rl-mark.svg" alt="" class="brand-mark">
+        <span class="brand-name">MemGUI-<span>RL</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#idea">Idea</a>
+        <a href="#results">Results</a>
+        <a href="#method">Method</a>
+        <a href="#case">Case</a>
+        <a href="#release">Release</a>
+      </div>
+    </div>
+  </nav>
+
+  <header id="top" class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">MemGUI-RL</p>
+      <h1>
+        <span class="title-line">MemGUI-RL: Reinforcement Learning for Proactive Context Management</span>
+        <span class="title-line">in Long-Horizon Mobile GUI Agents</span>
+      </h1>
+      <p class="anonymous-submission">Anonymous ICLR 2027 submission</p>
+      <p class="hero-copy">
+        Long-horizon mobile agents must decide not only <em>where to tap</em> but also <em>what to keep</em>.
+        MemGUI-RL post-trains policy-managed memory with <strong>FARPO</strong>
+        (<u>F</u>olding-<u>A</u>ware <u>R</u>eward-Decoupled <u>P</u>olicy <u>O</u>ptimization): each verifier
+        component is standardised within its prompt group before weighting, and the span-to-step exposure of the
+        training prompts is set explicitly. The resulting <strong>MemGUI-8B-RL</strong> is the best open-data 8B
+        model on both MemGUI-Bench and the out-of-distribution MobileWorld.
+      </p>
+      <div class="hero-actions">
+        <a class="button primary" href="https://github.com/memgui-rl-anonymous/MemGUI-RL" target="_blank" rel="noopener"><svg><use href="#icon-github"></use></svg> Code Repo</a>
+        <a class="button accent" href="https://huggingface.co/memgui-rl-anonymous/MemGUI-8B-RL" target="_blank" rel="noopener"><span class="hf-emoji" aria-hidden="true">🤗</span> MemGUI-8B-RL</a>
+        <a class="button accent soft" href="https://huggingface.co/datasets/memgui-rl-anonymous/MemGUI-3K-Verl" target="_blank" rel="noopener"><span class="hf-emoji" aria-hidden="true">🤗</span> Training Data</a>
+        <a class="button secondary" href="https://huggingface.co/datasets/memgui-rl-anonymous/MemGUI-RL-Eval" target="_blank" rel="noopener"><span class="hf-emoji" aria-hidden="true">🤗</span> Evaluation Logs</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="idea" class="section intro-band">
+      <div class="wrap">
+        <div class="intro-grid">
+          <div>
+            <p class="section-kicker">Core Idea</p>
+            <h2>Two properties of policy-managed memory break the naive GRPO recipe.</h2>
+          </div>
+          <p class="lead">
+            A Context-as-Action (ConAct) policy folds its own history, updates its UI memory and emits the next GUI
+            action in one response. Annotation-based verifiers score that response with several components, and the
+            components behave very differently: <strong>(1)</strong> aggregating them before normalisation lets the
+            component with the largest within-group spread decide the update, and <strong>(2)</strong> span-level
+            history folds are only 22.7% of the annotated folds, so natural sampling collapses the policy to
+            step-only folding.
+          </p>
+        </div>
+        <figure class="paper-figure teaser-figure">
+          <img src="assets/paper/farpo-motivation.png" alt="Why GRPO needs adapting for policy-managed memory, and what FARPO changes">
+          <figcaption><strong>Why GRPO needs adapting.</strong> (a) Applied naively to ConAct, GRPO normalises the weighted sum of heterogeneous verifier rewards with one shared standard deviation, and natural sampling drives the deep-fold rate on held-out states from 17.7% to 0.2%. (b) FARPO standardises every component before weighting and turns span exposure into a sampling ratio &rho;.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="results" class="section muted">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="section-kicker">Results</p>
+          <h2>MemGUI-8B-RL: the best open-data 8B model on both long-horizon benchmarks.</h2>
+        </div>
+        <figure class="paper-figure results-figure">
+          <img src="assets/paper/main-performance.png" alt="Main results of MemGUI-8B-RL on MemGUI-Bench and MobileWorld, and the 2x2 ablation">
+          <figcaption><strong>Main results.</strong> (a) MemGUI-Bench Pass@3 against end-to-end models up to 32B. (b) Out-of-distribution MobileWorld GUI-only success among open-data models. (c) The 2&times;2 ablation from the same SFT checkpoint: reward decoupling and folding-aware sampling are both needed.</figcaption>
+        </figure>
+        <div class="stats-grid">
+          <article><span>43.0%</span><strong>MemGUI-Bench Pass@3</strong><p>Up from 35.9% for MemGUI-8B-SFT (+19.8% relative) and more than double the Qwen3-VL-8B-Instruct backbone (20.3%).</p></article>
+          <article><span>35.0%</span><strong>Information-retention rate</strong><p>IRR rises from 30.2% (+15.9% relative); the largest gains land on cross-application tasks.</p></article>
+          <article><span>19.7%</span><strong>MobileWorld GUI-only SR</strong><p>Out-of-distribution transfer without any MobileWorld rollout in training (SFT: 17.9%).</p></article>
+          <article><span>&rho;</span><strong>A bimodal footprint</strong><p>Folding exposure is a hyper-parameter: below &rho;&asymp;2 the policy folds step by step, above it span folds dominate.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="method" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="section-kicker">Method</p>
+          <h2>FARPO fixes which candidates are compared and which decisions the policy sees.</h2>
+        </div>
+        <figure class="paper-figure wide overview-figure">
+          <img src="assets/paper/farpo-method.png" alt="Overview of FARPO">
+          <figcaption><strong>Overview.</strong> (a) The inherited ConAct loop: one policy emits the UI action and the folding command that maintains its structured memory. (b) Folding-aware sampling keeps all span folds and subsamples step folds, replacing the natural 22.7% span share with a chosen prior. (c) Reward-decoupled group advantage: the factorised verifier scores G = 5 sampled responses, each component is standardised within the group (constant components gated out), weighted with w, broadcast to tokens, batch-whitened and optimised with a dual-clipped PPO surrogate and a KL penalty to the SFT policy.</figcaption>
+        </figure>
+        <div class="feature-grid">
+          <article>
+            <img src="assets/paper/analysis.png" alt="Learning signal, offline memory metrics and failure labels">
+            <h3>Reward-decoupled group advantages</h3>
+            <p>Following GDPO, every verifier component is centred and scaled within its prompt group before the preference weights are applied, so a one-standard-deviation change in the format component and in the folding component move the advantage by the same amount. Zero-variance components are gated out instead of adding noise, and batch whitening keeps the response ordering.</p>
+          </article>
+          <article>
+            <img src="assets/paper/folding-exposure.png" alt="Folding exposure controls a bimodal footprint">
+            <h3>Folding-aware sampling</h3>
+            <p>Span folds are rare and step folds are already solved by the SFT policy, so most prompt groups carry no learning signal under natural sampling. FARPO keeps every span example and draws m<sub>&rho;</sub> = min{N<sub>step</sub>, &lceil;N<sub>span</sub>/&rho;&rceil;} step examples, which lifts the share of informative groups from 25&ndash;33% to 62&ndash;77% and turns folding exposure into an explicit, bimodal hyper-parameter.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="case" class="section muted">
+      <div class="wrap case-grid">
+        <figure class="paper-figure case-figure">
+          <img src="assets/paper/case-study.png" alt="Case study on MemGUI-Bench task 091">
+          <figcaption>MemGUI-Bench task 091 (Amazon &rarr; Wikipedia &rarr; Messages, eight facts). Only the FARPO policy stores the facts with explicit memory entries, compresses 71 steps into two folded lines and delivers the message.</figcaption>
+        </figure>
+        <div>
+          <p class="section-kicker">Case Study</p>
+          <h2>Span folds and explicit memory survive an 80-step task.</h2>
+          <p class="lead">The base model loops between "I have the price, now I need the rating" and "I have the rating, now I need the price" for 35 steps. The SFT policy and the GRPO recipe fold every step separately and exhaust their step budgets before Messages is opened. Reward decoupling without folding-aware sampling never leaves the search box. MemGUI-8B-RL folds each sub-task into one line, adds four memory entries and sends one SMS with all eight facts.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="release" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="section-kicker">Open Release</p>
+          <h2>Everything needed to reproduce the post-training.</h2>
+        </div>
+        <div class="release-grid">
+          <a class="release-item" href="https://github.com/memgui-rl-anonymous/MemGUI-RL" target="_blank" rel="noopener"><svg><use href="#icon-github"></use></svg><strong>Code</strong><span>FARPO trainer (reward-decoupled estimator, folding-aware sampler, ConAct verifier) and the launch scripts of every reported run.</span></a>
+          <a class="release-item" href="https://huggingface.co/memgui-rl-anonymous/MemGUI-8B-RL" target="_blank" rel="noopener"><span class="release-emoji" aria-hidden="true">🤗</span><strong>Model</strong><span>MemGUI-8B-RL, the FARPO (&rho; = 9) checkpoint post-trained from MemGUI-8B-SFT.</span></a>
+          <a class="release-item" href="https://huggingface.co/datasets/memgui-rl-anonymous/MemGUI-3K-Verl" target="_blank" rel="noopener"><span class="release-emoji" aria-hidden="true">🤗</span><strong>Training data</strong><span>Annotated MemGUI-3K states in the RL conversation format, with the train / held-out split used in the paper.</span></a>
+          <a class="release-item" href="https://huggingface.co/datasets/memgui-rl-anonymous/MemGUI-RL-Eval" target="_blank" rel="noopener"><span class="release-emoji" aria-hidden="true">🤗</span><strong>Evaluation logs</strong><span>MemGUI-Bench and MobileWorld trajectories and judge outputs for every model row in the paper.</span></a>
+        </div>
+        <p class="footnote">MemGUI-8B-SFT, MemGUI-3K and the ConAct interface are inherited from the MemGUI-Agent release; MemGUI-Bench and MobileWorld are used with their public harnesses.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">Anonymous project page for double-blind review. No author or affiliation information is disclosed.</div>
+  </footer>
+</body>
+</html>
