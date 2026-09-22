@@ -91,8 +91,8 @@
           <figcaption><strong>Main results.</strong> (a) MemGUI-Bench Pass@3 against end-to-end models up to 32B. (b) Out-of-distribution MobileWorld GUI-only success among open-data models. (c) The 2&times;2 ablation from the same SFT checkpoint: reward decoupling and folding-aware sampling are both needed.</figcaption>
         </figure>
         <div class="stats-grid">
-          <article><span>43.0%</span><strong>MemGUI-Bench Pass@3</strong><p>Up from 35.9% for MemGUI-8B-SFT (+19.8% relative) and more than double the Qwen3-VL-8B-Instruct backbone (20.3%).</p></article>
-          <article><span>35.0%</span><strong>Information-retention rate</strong><p>IRR rises from 30.2% (+15.9% relative); the largest gains land on cross-application tasks.</p></article>
+          <article><span>48.4%</span><strong>MemGUI-Bench Pass@3</strong><p>Up from 35.9% for MemGUI-8B-SFT (+34.8% relative) and more than double the Qwen3-VL-8B-Instruct backbone (20.3%).</p></article>
+          <article><span>39.0%</span><strong>Information-retention rate</strong><p>IRR rises from 30.2% (+29.1% relative); the largest gains land on cross-application tasks.</p></article>
           <article><span>19.7%</span><strong>MobileWorld GUI-only SR</strong><p>Out-of-distribution transfer without any MobileWorld rollout in training (SFT: 17.9%).</p></article>
           <article><span>&rho;</span><strong>A bimodal footprint</strong><p>Folding exposure is a hyper-parameter: below &rho;&asymp;2 the policy folds step by step, above it span folds dominate.</p></article>
         </div>
