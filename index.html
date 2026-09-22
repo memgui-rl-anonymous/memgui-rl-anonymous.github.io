@@ -106,8 +106,12 @@
           <h2>FARPO fixes which candidates are compared and which decisions the policy sees.</h2>
         </div>
         <figure class="paper-figure wide overview-figure">
-          <img src="assets/paper/farpo-method.png" alt="Overview of FARPO">
-          <figcaption><strong>Overview.</strong> (a) The inherited ConAct loop: one policy emits the UI action and the folding command that maintains its structured memory. (b) Folding-aware sampling keeps all span folds and subsamples step folds, replacing the natural 22.7% span share with a chosen prior. (c) Reward-decoupled group advantage: the factorised verifier scores G = 5 sampled responses, each component is standardised within the group (constant components gated out), weighted with w, broadcast to tokens, batch-whitened and optimised with a dual-clipped PPO surrogate and a KL penalty to the SFT policy.</figcaption>
+          <img src="assets/paper/conact-loop.png" alt="The ConAct loop">
+          <figcaption><strong>The ConAct loop.</strong> The policy reads the goal, the screenshot and its memory S<sub>t</sub> and emits a folding command together with the UI or memory action; both rewrite S<sub>t</sub> and the environment returns the next screenshot.</figcaption>
+        </figure>
+        <figure class="paper-figure wide overview-figure">
+          <img src="assets/paper/farpo-method.png" alt="Overview of the FARPO pipeline">
+          <figcaption><strong>Overview of the FARPO pipeline.</strong> Folding-aware sampling keeps every span fold and subsamples step folds, so span exposure is one ratio &rho;; per prompt, the rollout policy samples G ConAct responses that the factorised verifier scores on four components; FARPO standardises each component within the group before weighting and updates the policy with dual-clipped PPO.</figcaption>
         </figure>
         <div class="feature-grid">
           <article>
