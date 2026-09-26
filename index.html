@@ -150,7 +150,9 @@
             15.1&nbsp;&rarr;&nbsp;39.0 for the complete SFT&nbsp;+&nbsp;FARPO recipe; MobileWorld success doubles
             (9.4&nbsp;&rarr;&nbsp;19.7%). MemGUI-8B-RL is above every end-to-end model except the 235B ConAct agent.</li>
           <li><strong>Gains where memory matters.</strong> By golden-step difficulty, +29.2 Pass@3 on Easy and +9.6 on
-            Medium tasks over SFT; on the Easy tier the 8B policy matches the zero-shot 235B ConAct agent (68.8%).
+            Medium tasks over SFT; on the Easy tier the 8B policy matches the zero-shot 235B ConAct agent (68.8%). On the
+            Hard tier (41+ golden steps) SFT and RL are within two tasks of each other: only 12% of the RL prompts lie
+            beyond step 40 of their trajectory, and the dominant failure there is not what the fold verifier scores.
             By application count, +10.7 / +14.3 / +14.7 on one-, two- and three-application tasks.</li>
           <li><strong>Folding exposure is bimodal.</strong> Across seven ratios the trained policy folds spans almost
             always or almost never, and &rho; decides which; &rho;&nbsp;=&nbsp;9 is best on the development set and
