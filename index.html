@@ -113,12 +113,11 @@
             MobileWorld data in training.</p>
         </div>
         <figure class="paper-figure results-figure">
-          <img src="assets/paper/main-performance.png" alt="Main results of MemGUI-8B-RL on MemGUI-Bench and MobileWorld, and the 2x2 ablation">
+          <img src="assets/paper/main-performance.png" alt="Main results of MemGUI-8B-RL on MemGUI-Bench and MobileWorld, and the stepwise ablation">
           <figcaption><strong>Main results.</strong> (a) MemGUI-Bench Pass@3 against end-to-end models up to 32B and
-            the backbone. (b) MobileWorld GUI-only success among open-data models. (c) The 2&times;2 ablation from the same
-            SFT checkpoint, 100 steps each: reward decoupling alone or folding-aware sampling alone recovers part of the
-            gain, both together give +9.3 Pass@3 over the GRPO recipe. <sup>&dagger;</sup>The two single-mechanism cells
-            are provisional; their re-evaluation is in progress.</figcaption>
+            the backbone. (b) MobileWorld GUI-only success among open-data models. (c) The two mechanisms added one at a
+            time from the same SFT checkpoint, 100 steps each: the GRPO recipe, then reward decoupling, then folding-aware
+            sampling; each step improves on the last, +9.3 Pass@3 and +5 MobileWorld tasks over the recipe in total.</figcaption>
         </figure>
         <div class="results-row">
           <div class="results-table-card">
@@ -130,8 +129,9 @@
               <tbody>
                 <tr><td>Qwen3-VL-8B-Instruct (backbone)</td><td>9.4</td><td>20.3</td><td>15.1</td><td>11 / 117 &middot; 9.4%</td></tr>
                 <tr><td>MemGUI-8B-SFT (RL start)</td><td>23.4</td><td>35.9</td><td>30.2</td><td>21 / 117 &middot; 17.9%</td></tr>
-                <tr><td>&nbsp;&nbsp;+ GRPO recipe (scalar advantage, natural corpus)</td><td>23.4</td><td>39.1</td><td>35.7</td><td>18 / 117 &middot; 15.4%</td></tr>
-                <tr class="ours"><td>&nbsp;&nbsp;+ FARPO, &rho;&nbsp;=&nbsp;9 (MemGUI-8B-RL)</td><td>30.5</td><td>48.4</td><td>39.0</td><td>23 / 117 &middot; 19.7%</td></tr>
+                <tr><td>&nbsp;&nbsp;GRPO recipe (scalar advantage, natural corpus)</td><td>23.4</td><td>39.1</td><td>35.7</td><td>18 / 117 &middot; 15.4%</td></tr>
+                <tr><td>&nbsp;&nbsp;+ reward decoupling</td><td>29.7</td><td>45.3</td><td>38.5</td><td>20 / 117 &middot; 17.1%</td></tr>
+                <tr class="ours"><td>&nbsp;&nbsp;+ folding-aware sampling, &rho;&nbsp;=&nbsp;9 (= FARPO, MemGUI-8B-RL)</td><td>30.5</td><td>48.4</td><td>39.0</td><td>23 / 117 &middot; 19.7%</td></tr>
                 <tr class="ref"><td>Qwen3-VL-235B-Thinking (reported)</td><td>24.2</td><td>46.9</td><td>30.0</td><td>14.5%</td></tr>
               </tbody>
             </table>
@@ -187,13 +187,14 @@
         </figure>
         <div class="feature-grid">
           <article>
-            <img src="assets/paper/ablation-dynamics.png" alt="Training dynamics of the 2x2 ablation">
+            <img src="assets/paper/ablation-dynamics.png" alt="Training dynamics of the stepwise ablation">
             <h3>Reward-decoupled group advantages</h3>
             <p>Each verifier component is centred and scaled within its prompt group, gated when its group variance is
               zero, and only then weighted (w&nbsp;=&nbsp;0.1 / 0.4 / 0.4 / 0.1 for format, type, parameters, folding).
               A one-standard-deviation change in any component moves the advantage by the same amount, which the
-              scalar recipe does not guarantee. In the 2&times;2 ablation the scalar estimator on the &rho;&nbsp;=&nbsp;9 corpus raises the
-              folding reward fastest while its memory-trigger F1 lags behind FARPO's.</p>
+              scalar recipe does not guarantee. Added to the GRPO recipe on the same natural corpus, it gives +6.2 Pass@3
+              and +2.8 IRR, and memory-argument match on the held-out states rises stepwise along the ladder
+              (63.1 &rarr; 72.3 &rarr; 74.7 &rarr; 75.9).</p>
           </article>
           <article>
             <img src="assets/paper/folding-exposure.png" alt="Deep-fold rate over training and the development sweep over the ratio rho">
@@ -225,9 +226,10 @@
           <figcaption>Qwen3-VL-8B-Instruct alternates between "now I need the rating" and "now I need the price" for 35
             scrolls, keeps no memory and sends no message. MemGUI-8B-SFT stores all eight facts
             but folds one step at a time and runs out of budget at step 65; the GRPO recipe spends 50 of 81 actions
-            scrolling and stores four facts. Reward decoupling without folding-aware sampling re-types one query 27 times
-            and never runs the search. MemGUI-8B-RL closes each sub-task with a span fold, stores the facts as four memory
-            entries, ends its 80 steps with a two-line history and sends the message.</figcaption>
+            scrolling and stores four facts. Reward decoupling without folding-aware sampling collects all eight facts into
+            five memory entries but returns them as an answer instead of sending the message. MemGUI-8B-RL closes each
+            sub-task with a span fold, stores the facts as four memory entries, ends its 80 steps with a two-line history
+            and sends the message.</figcaption>
         </figure>
       </div>
     </section>
